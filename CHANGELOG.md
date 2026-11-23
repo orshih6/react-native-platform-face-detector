@@ -11,4 +11,6 @@ First version.
 
 Verified: the Apple Vision detection logic against a portrait on macOS; the example app builds for an arm64 iOS simulator (Xcode 26.6, Expo SDK 58).
 
-Not yet verified: the Android side has not been compiled; the iOS module has not been called from JavaScript at runtime; the live camera has not been run on a device.
+The Android side compiles (Kotlin, in the example app, Android SDK 37).
+
+Not yet verified: neither module has been called from JavaScript at runtime, and the live camera has not been run on a device or an emulator.
