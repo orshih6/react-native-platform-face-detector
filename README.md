@@ -2,7 +2,7 @@
 
 Face detection for React Native and Expo that uses **each platform's own detector**: Apple Vision on iOS, Google ML Kit on Android. One API over both, for still images and for a live camera view.
 
-> **Status: 0.1.0, early.** Both sides compile, and the iOS detection is checked against a real picture. **Neither side has been run in an app on a device yet** — see [What is verified](#what-is-verified).
+> **Status: 0.1.0, early.** Both sides compile, and the iOS side has run in the example app on a real iPhone. **The Android side has not been run in an app yet** — see [What is verified](#what-is-verified).
 
 ## Why this exists
 
@@ -141,8 +141,8 @@ type Face = {
 |---|---|
 | iOS detection logic (Apple Vision → faces, coordinates, landmarks, angles) | Run on macOS against a portrait: one face, landmarks in the right order, top-left origin |
 | iOS module + view compile for an Apple Silicon simulator | Built: the example app, arm64 `iphonesimulator`, Xcode 26.6, Expo SDK 58 (0.1.0) |
-| iOS module loaded and called from JavaScript at runtime | **Not run yet** — compiled only |
-| iOS live camera on a real iPhone | **Not tested yet** |
+| iOS module loaded and called from JavaScript at runtime | Run: the example app, release build, on an iPhone 16 Pro Max (iOS 27.2) |
+| iOS live camera on a real iPhone | Seen working on the same phone: the camera opens and faces are reported. Angle signs, `takeSnapshot` and `detectFacesInImage` were **not checked one by one** |
 | Android module + view compile (Kotlin, ML Kit 16.1.7, CameraX 1.4.2) | Built: `:react-native-platform-face-detector:compileDebugKotlin` in the example app, Android SDK 37, JDK 17, Expo SDK 58 (0.1.0) |
 | Android run in an app, on an emulator or a device | **Not run yet** — compiled only |
 

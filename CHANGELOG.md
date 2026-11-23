@@ -13,4 +13,6 @@ Verified: the Apple Vision detection logic against a portrait on macOS; the exam
 
 The Android side compiles (Kotlin, in the example app, Android SDK 37).
 
-Not yet verified: neither module has been called from JavaScript at runtime, and the live camera has not been run on a device or an emulator.
+The iOS side runs in the example app on a real iPhone (release build, iPhone 16 Pro Max, iOS 27.2): the live camera opens and reports faces.
+
+Not yet verified: the Android module has not been run in an app, on a device or an emulator. On iOS, the angle signs, `takeSnapshot` and `detectFacesInImage` have not been checked one by one on the phone.
