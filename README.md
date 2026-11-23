@@ -35,6 +35,18 @@ npx expo prebuild   # or: npx pod-install
 
 Requirements: Expo SDK 58 / React Native 0.88 (what it is built against), iOS 16.4+, Android as your Expo SDK requires.
 
+### In a React Native app without Expo
+
+It is written as an Expo module, so the app needs Expo's native core. A plain React Native app gets that once with:
+
+```sh
+npx install-expo-modules@latest
+npm install github:orshih6/react-native-platform-face-detector
+npx pod-install
+```
+
+This adds the `expo` package and a few lines to the native projects. It does not move the app to Expo's workflow. **This route has not been tested with this library yet** — it has only been run in an Expo SDK 58 app. An app that cannot take any Expo dependency cannot use it.
+
 Add the camera usage text to your app (`app.json`):
 
 ```json
