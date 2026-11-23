@@ -14,6 +14,7 @@ const round = (n: number | null) => (n === null ? '—' : n.toFixed(1));
 export default function App() {
   const camera = useRef<FaceCameraViewRef>(null);
   const [live, setLive] = useState(false);
+  const [facing, setFacing] = useState<'front' | 'back'>('front');
   const [faces, setFaces] = useState<Face[]>([]);
   const [log, setLog] = useState('Nothing yet.');
 
@@ -52,6 +53,10 @@ export default function App() {
       <View style={styles.row}>
         <Button title={live ? 'Close camera' : 'Open camera'} onPress={live ? () => setLive(false) : openCamera} />
         <Button title="Snapshot" onPress={snap} disabled={!live} />
+        <Button
+          title={facing === 'front' ? 'Use back lens' : 'Use front lens'}
+          onPress={() => setFacing(facing === 'front' ? 'back' : 'front')}
+        />
         <Button title="Pick a photo" onPress={pickPhoto} />
       </View>
 
@@ -60,7 +65,7 @@ export default function App() {
           <FaceCameraView
             ref={camera}
             style={StyleSheet.absoluteFill}
-            facing="front"
+            facing={facing}
             minIntervalMs={100}
             onFacesDetected={(e) => setFaces(e.nativeEvent.faces)}
             onError={(e) => setLog(`${e.nativeEvent.code}: ${e.nativeEvent.message}`)}

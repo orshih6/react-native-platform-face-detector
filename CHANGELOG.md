@@ -15,4 +15,12 @@ The Android side compiles (Kotlin, in the example app, Android SDK 37).
 
 The iOS side runs in the example app on a real iPhone (release build, iPhone 16 Pro Max, iOS 27.2): the live camera opens and reports faces.
 
-Not yet verified: the Android module has not been run in an app, on a device or an emulator. On iOS, the angle signs, `takeSnapshot` and `detectFacesInImage` have not been checked one by one on the phone.
+The Android side runs in the example app on an Android 14 emulator (release build, R8 on): a portrait gives one face with its landmarks, the live view shows frames on the back lens, and `takeSnapshot` writes a picture. Running it found and fixed three things:
+
+- Release builds shrink code with R8, which broke ML Kit so that reading any picture failed. The library now ships keep rules (`android/consumer-rules.pro`) that apps pick up automatically.
+- The live view stayed black and produced no frames, because the preview's drawing surface was never laid out. `FaceCameraView` now runs that layout pass itself.
+- `detectFacesInImage` now says why a picture could not be read, and decodes it by hand if ML Kit cannot open it.
+
+The example app has a button to switch between the front and back lens.
+
+Not yet verified: a live face in front of an Android camera (the emulator's scene has no person), the Android front lens, and a real Android phone. On iOS, the angle signs, `takeSnapshot` and `detectFacesInImage` have not been checked one by one on the phone.

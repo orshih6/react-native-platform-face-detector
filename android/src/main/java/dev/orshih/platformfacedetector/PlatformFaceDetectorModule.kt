@@ -2,7 +2,10 @@ package dev.orshih.platformfacedetector
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.graphics.BitmapFactory
+import android.media.ExifInterface
 import android.net.Uri
+import android.util.Log
 import androidx.core.content.ContextCompat
 import com.google.mlkit.vision.common.InputImage
 import expo.modules.interfaces.permissions.Permissions
@@ -13,7 +16,9 @@ import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
+import java.io.ByteArrayInputStream
 import java.io.File
+import java.io.IOException
 
 class DetectOptions : Record {
   @Field
@@ -33,9 +38,36 @@ class SnapshotOptions : Record {
 
 class FaceDetectorException(message: String) : CodedException(message)
 
+private const val TAG = "PlatformFaceDetector"
+
 class PlatformFaceDetectorModule : Module() {
   private val context
     get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
+
+  /**
+   * The picture, upright. `fromFilePath` reads the EXIF orientation itself; if
+   * it cannot open the picture, decode it by hand and pass the rotation along.
+   */
+  private fun readImage(source: Uri): InputImage {
+    try {
+      return InputImage.fromFilePath(context, source)
+    } catch (e: Exception) {
+      Log.w(TAG, "InputImage.fromFilePath failed for $source, decoding by hand", e)
+    }
+    val bytes = context.contentResolver.openInputStream(source)?.use { it.readBytes() }
+      ?: throw IOException("nothing to read")
+    val bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+      ?: throw IOException("not a picture")
+    val orientation = ExifInterface(ByteArrayInputStream(bytes))
+      .getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL)
+    val rotation = when (orientation) {
+      ExifInterface.ORIENTATION_ROTATE_90 -> 90
+      ExifInterface.ORIENTATION_ROTATE_180 -> 180
+      ExifInterface.ORIENTATION_ROTATE_270 -> 270
+      else -> 0
+    }
+    return InputImage.fromBitmap(bitmap, rotation)
+  }
 
   override fun definition() = ModuleDefinition {
     Name("PlatformFaceDetector")
@@ -43,12 +75,12 @@ class PlatformFaceDetectorModule : Module() {
     AsyncFunction("detectFacesInImage") { uri: String, options: DetectOptions, promise: Promise ->
       val parsed = Uri.parse(uri)
       val source = if (parsed.scheme == null) Uri.fromFile(File(uri)) else parsed
-      // fromFilePath reads the EXIF orientation, so the picture is upright and
-      // `width`/`height` below already describe it that way.
       val image = try {
-        InputImage.fromFilePath(context, source)
+        readImage(source)
       } catch (e: Exception) {
-        promise.reject(FaceDetectorException("Could not read an image at $uri"))
+        promise.reject(
+          FaceDetectorException("Could not read an image at $uri (${e.javaClass.simpleName}: ${e.message})")
+        )
         return@AsyncFunction
       }
       val detector = FaceMlKit.detector(options.landmarks)

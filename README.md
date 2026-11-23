@@ -2,7 +2,7 @@
 
 Face detection for React Native and Expo that uses **each platform's own detector**: Apple Vision on iOS, Google ML Kit on Android. One API over both, for still images and for a live camera view.
 
-> **Status: 0.1.0, early.** Both sides compile, and the iOS side has run in the example app on a real iPhone. **The Android side has not been run in an app yet** — see [What is verified](#what-is-verified).
+> **Status: 0.1.0, early.** The iOS side has run on a real iPhone. The Android side has run on an emulator: faces in a photo are found, and the live view shows frames and takes snapshots. **A live face in front of an Android camera has not been tested yet** — see [What is verified](#what-is-verified).
 
 ## Why this exists
 
@@ -144,7 +144,8 @@ type Face = {
 | iOS module loaded and called from JavaScript at runtime | Run: the example app, release build, on an iPhone 16 Pro Max (iOS 27.2) |
 | iOS live camera on a real iPhone | Seen working on the same phone: the camera opens and faces are reported. Angle signs, `takeSnapshot` and `detectFacesInImage` were **not checked one by one** |
 | Android module + view compile (Kotlin, ML Kit 16.1.7, CameraX 1.4.2) | Built: `:react-native-platform-face-detector:compileDebugKotlin` in the example app, Android SDK 37, JDK 17, Expo SDK 58 (0.1.0) |
-| Android run in an app, on an emulator or a device | **Not run yet** — compiled only |
+| Android `detectFacesInImage` in a running app | Run: the example app, release build with R8 shrinking on, Android 14 emulator (x86_64). A 960×1200 portrait gave one face with eyes, nose and mouth in the right places |
+| Android live view and `takeSnapshot` | Run on the same emulator, back lens: the preview shows, frames are analysed, a snapshot is written. The emulator's scene has no person in it, so **finding a live face on Android is not tested yet**, and neither is the front lens or a real phone |
 
 ## Example
 

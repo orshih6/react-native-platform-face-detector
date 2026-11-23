@@ -95,7 +95,26 @@ class FaceCameraView(context: Context, appContext: AppContext) : ExpoView(contex
     detector = null
   }
 
-  // React Native does not lay out native children added outside its tree.
+  // React Native does not lay out native children added outside its tree, and
+  // it swallows their later layout requests. PreviewView adds its drawing
+  // surface after the camera starts and asks for a layout then; without this
+  // pass the surface stays 0x0, the camera waits for it and gives up after 5 s
+  // (a black view and no frames).
+  private val relayout = Runnable {
+    measure(
+      MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY),
+      MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY)
+    )
+    layout(left, top, right, bottom)
+  }
+
+  override fun requestLayout() {
+    super.requestLayout()
+    // Called from the superclass constructor too, before `relayout` exists.
+    @Suppress("SENSELESS_COMPARISON")
+    if (relayout != null) post(relayout)
+  }
+
   override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
     preview.measure(
       MeasureSpec.makeMeasureSpec(r - l, MeasureSpec.EXACTLY),
