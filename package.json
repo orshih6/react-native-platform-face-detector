@@ -1,0 +1,72 @@
+{
+  "name": "react-native-platform-face-detector",
+  "version": "0.1.0",
+  "description": "Face detection for React Native with each platform's own detector: Apple Vision on iOS, ML Kit on Android. Still images and a live camera view. Builds for Apple Silicon iOS simulators.",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "scripts": {
+    "build": "node internal/module_scripts/build.js",
+    "clean": "node internal/module_scripts/clean.js",
+    "lint": "eslint src/",
+    "test": "node internal/module_scripts/test.js",
+    "prepare": "node internal/module_scripts/prepare.js",
+    "open:ios": "node internal/module_scripts/open-ios.js",
+    "open:android": "node internal/module_scripts/open-android.js"
+  },
+  "keywords": [
+    "react-native",
+    "expo",
+    "face-detection",
+    "apple-vision",
+    "vision-framework",
+    "mlkit",
+    "camera",
+    "ios",
+    "android"
+  ],
+  "repository": "https://github.com/orshih6/react-native-platform-face-detector",
+  "bugs": {
+    "url": "https://github.com/orshih6/react-native-platform-face-detector/issues"
+  },
+  "author": "orshih6 (https://github.com/orshih6)",
+  "license": "MIT",
+  "homepage": "https://github.com/orshih6/react-native-platform-face-detector#readme",
+  "dependencies": {},
+  "devDependencies": {
+    "@babel/core": "^7.26.0",
+    "@react-native/jest-preset": "0.88.1",
+    "@types/jest": "^30.0.0",
+    "@types/react": "~19.3.0",
+    "babel-preset-expo": "~58.0.22",
+    "eslint": "~9.39.4",
+    "eslint-config-universe": "^16.1.2",
+    "expo": "^58.0.21",
+    "jest": "^30.0.0",
+    "jest-expo": "~58.0.13",
+    "prettier": "^3.0.0",
+    "react": "19.3.0",
+    "react-native": "0.88.1",
+    "typescript": "~6.0.3"
+  },
+  "jest": {
+    "preset": "jest-expo",
+    "roots": [
+      "<rootDir>/src"
+    ]
+  },
+  "peerDependencies": {
+    "expo": "*",
+    "react": "*",
+    "react-native": "*"
+  },
+  "files": [
+    "build",
+    "src",
+    "ios",
+    "android",
+    "expo-module.config.json",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
+  ]
+}

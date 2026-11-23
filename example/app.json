@@ -1,0 +1,23 @@
+{
+  "expo": {
+    "name": "Face Detector Example",
+    "slug": "platform-face-detector-example",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "newArchEnabled": true,
+    "experiments": {
+      "autolinkingModuleResolution": true
+    },
+    "ios": {
+      "bundleIdentifier": "dev.orshih.platformfacedetector.example",
+      "infoPlist": {
+        "NSCameraUsageDescription": "The example shows the faces the camera sees.",
+        "NSPhotoLibraryUsageDescription": "The example finds the faces in a photo you pick."
+      }
+    },
+    "android": {
+      "package": "dev.orshih.platformfacedetector.example",
+      "permissions": ["android.permission.CAMERA"]
+    }
+  }
+}

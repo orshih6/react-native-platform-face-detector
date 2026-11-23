@@ -1,0 +1,10 @@
+{
+  "extends": "expo/tsconfig.base",
+  "compilerOptions": {
+    "strict": true,
+    "paths": {
+      "react-native-platform-face-detector": ["../src/index"],
+      "react-native-platform-face-detector/*": ["../src/*"]
+    }
+  }
+}
