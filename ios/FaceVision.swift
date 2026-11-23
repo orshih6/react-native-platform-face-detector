@@ -1,4 +1,5 @@
 import CoreGraphics
+import CoreML
 import CoreVideo
 import Foundation
 import Vision
@@ -17,6 +18,7 @@ enum FaceVision {
     // continuous angle and adds pitch; the landmarks request's own yaw comes
     // in coarse steps, so angles are always read from this one.
     let rectangles = VNDetectFaceRectanglesRequest()
+    onSimulatorUseCPU(rectangles)
     try handler.perform([rectangles])
     let found = rectangles.results ?? []
     if found.isEmpty { return [] }
@@ -24,6 +26,7 @@ enum FaceVision {
     var marks: [UUID: VNFaceLandmarks2D] = [:]
     if landmarks {
       let request = VNDetectFaceLandmarksRequest()
+      onSimulatorUseCPU(request)
       request.inputFaceObservations = found
       try handler.perform([request])
       for face in request.results ?? [] {
@@ -49,6 +52,26 @@ enum FaceVision {
       }
       return out
     }
+  }
+
+  /// A simulator has no Neural Engine and its GPU path fails with "Could not
+  /// create inference context", so Vision is told to run on the CPU there.
+  /// A real device is left alone and picks its own fastest hardware.
+  private static func onSimulatorUseCPU(_ request: VNImageBasedRequest) {
+    #if targetEnvironment(simulator)
+    if #available(iOS 17.0, *) {
+      guard let stages = try? request.supportedComputeStageDevices else { return }
+      for (stage, devices) in stages {
+        let cpu = devices.first { device in
+          if case .cpu = device { return true }
+          return false
+        }
+        if let cpu = cpu { request.setComputeDevice(cpu, for: stage) }
+      }
+    } else {
+      request.usesCPUOnly = true
+    }
+    #endif
   }
 
   private static func degrees(_ radians: NSNumber?) -> Any {
