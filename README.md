@@ -2,7 +2,7 @@
 
 Face detection for React Native and Expo that uses **each platform's own detector**: Apple Vision on iOS, Google ML Kit on Android. One API over both, for still images and for a live camera view.
 
-> **Status: 0.1.0, early.** The iOS side has run on a real iPhone. The Android side has run on an emulator: faces in a photo are found, and the live view shows frames and takes snapshots. **A live face in front of an Android camera has not been tested yet** — see [What is verified](#what-is-verified).
+> **Status: 0.1.0, early.** The iOS side has run on a real iPhone. The Android side has run on an emulator: faces in a photo are found, and the live view shows frames and takes snapshots. It also runs in a plain React Native app on both platforms. **A live face in front of an Android camera has not been tested yet** — see [What is verified](#what-is-verified).
 
 ## Why this exists
 
@@ -45,7 +45,69 @@ npm install github:orshih6/react-native-platform-face-detector
 npx pod-install
 ```
 
-This adds the `expo` package and a few lines to the native projects. It does not move the app to Expo's workflow. **This route has not been tested with this library yet** — it has only been run in an Expo SDK 58 app. An app that cannot take any Expo dependency cannot use it.
+This adds the `expo` package and a few lines to the native projects. It does not move the app to Expo's workflow. An app that cannot take any Expo dependency cannot use this library.
+
+Tested with a fresh React Native 0.88.1 app (see [What is verified](#what-is-verified)). On that version `install-expo-modules` leaves two things unfinished, and the app does not build until they are fixed by hand:
+
+**iOS** — the new scene-based template is only half converted. Replace the two files with Expo's own shape (use your app's name where it says `YourApp`):
+
+```swift
+// ios/YourApp/AppDelegate.swift
+internal import Expo
+import React
+import ReactAppDependencyProvider
+import UIKit
+
+@main
+class AppDelegate: ExpoAppDelegate, ExpoReactNativeFactoryProvider {
+  var window: UIWindow?
+  var reactNativeDelegate: ExpoReactNativeFactoryDelegate?
+  var reactNativeFactory: RCTReactNativeFactory?
+  var reactNativeFactoryModuleName: String { "YourApp" }
+
+  public override func application(
+    _ application: UIApplication,
+    didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
+  ) -> Bool {
+    let delegate = ReactNativeDelegate()
+    let factory = ExpoReactNativeFactory(delegate: delegate)
+    delegate.dependencyProvider = RCTAppDependencyProvider()
+    reactNativeDelegate = delegate
+    reactNativeFactory = factory
+    return super.application(application, didFinishLaunchingWithOptions: launchOptions)
+  }
+}
+
+class ReactNativeDelegate: ExpoReactNativeFactoryDelegate {
+  override func sourceURL(for bridge: RCTBridge) -> URL? {
+    bridge.bundleURL ?? bundleURL()
+  }
+
+  override func bundleURL() -> URL? {
+#if DEBUG
+    return RCTBundleURLProvider.sharedSettings().jsBundleURL(forBundleRoot: "index")
+#else
+    return Bundle.main.url(forResource: "main", withExtension: "jsbundle")
+#endif
+  }
+}
+```
+
+```swift
+// ios/YourApp/SceneDelegate.swift
+internal import Expo
+
+class SceneDelegate: ExpoAppSceneDelegate {
+}
+```
+
+**Android** — in `android/app/build.gradle`, the `cliFile` line cannot find Expo's CLI. Change it to:
+
+```gradle
+cliFile = new File(["node", "--print", "require.resolve('@expo/cli', { paths: [require.resolve('expo/package.json')] })"].execute(null, rootDir).text.trim())
+```
+
+Both are gaps in Expo's setup tool, not in this library, and may be fixed in a later `install-expo-modules`.
 
 Add the camera usage text to your app (`app.json`):
 
@@ -158,6 +220,8 @@ type Face = {
 | Android module + view compile (Kotlin, ML Kit 16.1.7, CameraX 1.4.2) | Built: `:react-native-platform-face-detector:compileDebugKotlin` in the example app, Android SDK 37, JDK 17, Expo SDK 58 (0.1.0) |
 | Android `detectFacesInImage` in a running app | Run: the example app, release build with R8 shrinking on, Android 14 emulator (x86_64). A 960×1200 portrait gave one face with eyes, nose and mouth in the right places |
 | Android live view and `takeSnapshot` | Run on the same emulator, back lens: the preview shows, frames are analysed, a snapshot is written. The emulator's scene has no person in it, so **finding a live face on Android is not tested yet**, and neither is the front lens or a real phone |
+| Plain React Native app (no Expo workflow), React Native 0.88.1 + `install-expo-modules` | Run, release builds: on an iOS 26.5 simulator a bundled portrait gave one face; on the Android 14 emulator a portrait gave one face, the live view sent events and a snapshot was taken and scanned. Needed the two manual fixes described under Install |
+| iOS simulator | `detectFacesInImage` works (Vision is run on the CPU there). A simulator has no camera, so the live view does not |
 
 ## Example
 
