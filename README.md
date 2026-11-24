@@ -2,7 +2,7 @@
 
 Face detection for React Native and Expo that uses **each platform's own detector**: Apple Vision on iOS, Google ML Kit on Android. One API over both, for still images and for a live camera view.
 
-> **Status: 0.1.0, early.** The iOS side has run on a real iPhone. The Android side has run on an emulator: faces in a photo are found, and the live view shows frames and takes snapshots. It also runs in a plain React Native app on both platforms. **A live face in front of an Android camera has not been tested yet** — see [What is verified](#what-is-verified).
+> **Status: 0.1.1, early.** The iOS side has run on a real iPhone. The Android side has run on an emulator: faces in a photo are found, and the live view shows frames and takes snapshots. It also runs in a plain React Native app on both platforms. **A live face in front of an Android camera has not been tested yet** — see [What is verified](#what-is-verified).
 
 ## Why this exists
 

@@ -1,6 +1,6 @@
 {
   "name": "react-native-platform-face-detector",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Face detection for React Native with each platform's own detector: Apple Vision on iOS, ML Kit on Android. Still images and a live camera view. Builds for Apple Silicon iOS simulators.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
